@@ -1,0 +1,37 @@
+service: who-know-more-services
+frameworkVersion: "3"
+
+plugins:
+  - serverless-plugin-optimize
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs14.x
+  websocketsApiName: who-know-more-sockets
+  websocketsApiRouteSelectionExpression: $request.body.action
+  deploymentPrefix: ${self:service}
+
+  environment:
+    ROOM_TABLE: ${self:service}-table-room
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:*
+            - dynamodb:*
+            - states:*
+            - events:*
+            - execute-api:ManageConnections
+          Resource: "*"
+
+functions:
+  - ${file(src/Lambdas/Connect/serverless.function.yml)}
+  - ${file(src/Lambdas/Disconect/serverless.function.yml)}
+  - ${file(src/Lambdas/CreateRoom/serverless.function.yml)}
+  - ${file(src/Lambdas/JoinRoom/serverless.function.yml)}
+
+resources:
+  - ${file(src/DynamoDB/serverless.rooms.dynamodb.yml)}

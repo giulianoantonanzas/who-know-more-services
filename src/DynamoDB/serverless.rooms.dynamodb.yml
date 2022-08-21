@@ -1,0 +1,21 @@
+Resources:
+  Rooms:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.environment.ROOM_TABLE}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: connectionIdCreator
+          AttributeType: S
+        - AttributeName: connectionIdInvited
+          AttributeType: S
+      KeySchema:
+        - AttributeName: connectionIdCreator
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: connectionIdInvited
+          KeySchema:
+            - AttributeName: connectionIdInvited
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
