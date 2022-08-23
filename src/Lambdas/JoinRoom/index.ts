@@ -5,6 +5,7 @@ import Room from "Types/Room";
 
 type JoinRoomBody = {
   roomCode: string;
+  name: string;
 };
 
 export const handler = async (event: APIGatewayEvent) => {
@@ -29,7 +30,7 @@ export const handler = async (event: APIGatewayEvent) => {
       payload: {
         eventName: "JoinRoom",
         eventResult: "failed",
-        message: "Codigo invalido.",
+        data: { message: "Codigo invalido." },
       },
     });
     return {
@@ -43,30 +44,32 @@ export const handler = async (event: APIGatewayEvent) => {
       Key: {
         connectionIdCreator: body.roomCode,
       },
-      UpdateExpression: "set connectionIdInvited=:connectionIdInvited",
+      UpdateExpression:
+        "set connectionIdInvited=:connectionIdInvited, invitedName=:invitedName",
       ExpressionAttributeValues: {
         ":connectionIdInvited": connectionId,
+        ":invitedName": body.name,
       },
     })
     .promise();
 
-  Promise.all([
+  await Promise.all([
     sendMessageToClient({
       url: callbackUrlForAWS,
       connectionId,
       payload: {
         eventName: "JoinRoom",
         eventResult: "success",
-        message: "Encontraste la sala!",
+        data: { message: "Encontraste la sala!" },
       },
     }),
     await sendMessageToClient({
       url: callbackUrlForAWS,
       connectionId: room.connectionIdCreator,
       payload: {
-        eventName: "JoinRoom",
+        eventName: "MemberJoin",
         eventResult: "success",
-        message: "Alguien encontro la sala!",
+        data: { message: "Alguien encontro la sala!" },
       },
     }),
   ]);

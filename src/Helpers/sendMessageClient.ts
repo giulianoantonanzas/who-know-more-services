@@ -1,9 +1,10 @@
 import AWS from "aws-sdk";
+import WhoKnowMoreEvent from "Types/WhoKnowMoreEvent";
 
 const sendMessageToClient = (options: {
   url: string;
   connectionId?: string;
-  payload: Record<string, unknown>;
+  payload: WhoKnowMoreEvent;
 }) =>
   new Promise((resolve, reject) => {
     const apiGatewayManagementApi = new AWS.ApiGatewayManagementApi({

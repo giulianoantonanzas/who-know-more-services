@@ -4,4 +4,4 @@ JoinRoom:
   handler: dist/Lambdas/JoinRoom/index.handler
   events:
     - websocket:
-        route: joinRoom
+        route: JoinRoom

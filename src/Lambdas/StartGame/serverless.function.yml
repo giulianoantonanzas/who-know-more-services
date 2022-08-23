@@ -1,0 +1,7 @@
+Resources:
+
+Connect:
+  handler: dist/Lambdas/StartGame/index.handler
+  events:
+    - websocket:
+        route: StartGame

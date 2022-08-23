@@ -4,4 +4,4 @@ CreateRoom:
   handler: dist/Lambdas/CreateRoom/index.handler
   events:
     - websocket:
-        route: createRoom
+        route: CreateRoom
