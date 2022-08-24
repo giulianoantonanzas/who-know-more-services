@@ -9,7 +9,6 @@ import Room from "Types/Room";
  *  esta conection puede pertenecer al Creador como al invitado
  */
 export const handler = async (event: APIGatewayEvent) => {
-  console.log(event);
   const { connectionId, domainName, stage } = event.requestContext;
   const db = new DynamoDB.DocumentClient();
   const callbackUrlForAWS = `https://${domainName}/${stage}`;
@@ -50,16 +49,21 @@ export const handler = async (event: APIGatewayEvent) => {
     console.log("Problemas al intentar obtener el room.");
   }
 
+  if (!room?.connectionIdCreator) {
+    throw Error("Bad request");
+  }
+
   if (typeOfUser === "creator") {
-    sendMessageToClient({
-      payload: {
-        data: { message: "El creador se fue de la sala." },
-        eventResult: "success",
-        eventName: "Disconect",
-      },
-      url: callbackUrlForAWS,
-      connectionId: room?.connectionIdInvited,
-    });
+    if (room.connectionIdInvited)
+      sendMessageToClient({
+        payload: {
+          data: { message: "El creador se fue de la sala." },
+          eventResult: "success",
+          eventName: "Disconect",
+        },
+        url: callbackUrlForAWS,
+        connectionId: room.connectionIdInvited,
+      });
   } else {
     sendMessageToClient({
       payload: {
@@ -71,15 +75,6 @@ export const handler = async (event: APIGatewayEvent) => {
       connectionId: room?.connectionIdCreator,
     });
   }
-
-  await db
-    .delete({
-      TableName: process.env.ROOM_TABLE,
-      Key: {
-        connectionIdCreator: room?.connectionIdCreator,
-      },
-    })
-    .promise();
 
   return {
     statusCode: 200,

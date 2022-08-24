@@ -8,7 +8,12 @@ type CreatorRoomBody = {
 };
 
 export const handler = async (event: APIGatewayEvent) => {
-  const { connectionId, domainName, stage } = event.requestContext;
+  const {
+    connectionId,
+    domainName,
+    stage,
+    identity: { sourceIp },
+  } = event.requestContext;
   const body = JSON.parse(event.body as string) as CreatorRoomBody;
   const db = new DynamoDB.DocumentClient();
 
@@ -18,6 +23,7 @@ export const handler = async (event: APIGatewayEvent) => {
       Item: {
         connectionIdCreator: connectionId,
         creatorName: body.name,
+        creatorIp: sourceIp,
         createAt: new Date().toISOString(),
       } as Room,
     })
@@ -29,7 +35,7 @@ export const handler = async (event: APIGatewayEvent) => {
     connectionId,
     payload: {
       eventName: "CreateRoom",
-      data: { createdRoomId: connectionId },
+      data: { roomId: connectionId },
       eventResult: "success",
     },
   });

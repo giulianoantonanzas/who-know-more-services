@@ -3,6 +3,8 @@ type Room = {
   connectionIdInvited: string;
   createAt: string;
   invitedName: string;
+  creatorIp: string;
+  invitedIp: string;
   creatorName: string;
 };
 
