@@ -5,6 +5,7 @@ import Room from "Types/Room";
 
 type CreatorRoomBody = {
   name: string;
+  userId: string;
 };
 
 export const handler = async (event: APIGatewayEvent) => {
@@ -25,6 +26,7 @@ export const handler = async (event: APIGatewayEvent) => {
         creatorName: body.name,
         creatorIp: sourceIp,
         createAt: new Date().toISOString(),
+        creatorId: body.userId,
       } as Room,
     })
     .promise();

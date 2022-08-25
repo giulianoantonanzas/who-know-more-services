@@ -9,6 +9,10 @@ Resources:
           AttributeType: S
         - AttributeName: connectionIdInvited
           AttributeType: S
+        - AttributeName: creatorId
+          AttributeType: S
+        - AttributeName: invitedId
+          AttributeType: S
       KeySchema:
         - AttributeName: connectionIdCreator
           KeyType: HASH
@@ -16,6 +20,18 @@ Resources:
         - IndexName: connectionIdInvited
           KeySchema:
             - AttributeName: connectionIdInvited
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: creatorId
+          KeySchema:
+            - AttributeName: creatorId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: invitedId
+          KeySchema:
+            - AttributeName: invitedId
               KeyType: HASH
           Projection:
             ProjectionType: ALL

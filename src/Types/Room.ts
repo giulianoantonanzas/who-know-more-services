@@ -6,6 +6,8 @@ type Room = {
   creatorIp: string;
   invitedIp: string;
   creatorName: string;
+  creatorId: string;
+  invitedId: string;
 };
 
 export default Room;

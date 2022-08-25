@@ -1,0 +1,7 @@
+Resources:
+
+SetReady:
+  handler: dist/Lambdas/SetReady/index.handler
+  events:
+    - websocket:
+        route: SetReady

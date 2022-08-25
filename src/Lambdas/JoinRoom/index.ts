@@ -6,15 +6,11 @@ import Room from "Types/Room";
 type JoinRoomBody = {
   roomCode: string;
   name: string;
+  userId: string;
 };
 
 export const handler = async (event: APIGatewayEvent) => {
-  const {
-    connectionId,
-    domainName,
-    stage,
-    identity: { sourceIp },
-  } = event.requestContext;
+  const { connectionId, domainName, stage } = event.requestContext;
   const body = JSON.parse(event.body as string) as JoinRoomBody;
   const db = new DynamoDB.DocumentClient();
   const callbackUrlForAWS = `https://${domainName}/${stage}`;
@@ -27,23 +23,6 @@ export const handler = async (event: APIGatewayEvent) => {
       } as Room,
     })
     .promise()) as { Item?: Room };
-
-  if (sourceIp === room?.creatorIp) {
-    await sendMessageToClient({
-      url: callbackUrlForAWS,
-      connectionId,
-      payload: {
-        eventName: "JoinRoom",
-        eventResult: "failed",
-        data: {
-          message: "Lamentablemente no puedes jugar contra tí mismo :(",
-        },
-      },
-    });
-    return {
-      statusCode: 400,
-    };
-  }
 
   if (!room) {
     await sendMessageToClient({
@@ -60,42 +39,37 @@ export const handler = async (event: APIGatewayEvent) => {
     };
   }
 
-  await db
-    .update({
-      TableName: process.env.ROOM_TABLE,
-      Key: {
-        connectionIdCreator: body.roomCode,
-      },
-      ConditionExpression: "connectionIdCreator=:connectionIdCreator",
-      UpdateExpression:
-        "set connectionIdInvited=:connectionIdInvited, invitedName=:invitedName",
-      ExpressionAttributeValues: {
-        ":connectionIdInvited": connectionId,
-        ":invitedName": body.name,
-        ":connectionIdCreator": body.roomCode,
-      },
-    })
-    .promise();
-
-  if (room.connectionIdCreator === connectionId) {
-    await sendMessageToClient({
-      url: callbackUrlForAWS,
-      connectionId,
-      payload: {
-        eventName: "JoinRoom",
-        eventResult: "failed",
-        data: { message: "Acabas de crear un room." },
-      },
-    });
-    return { statusCode: 400 };
-  }
-
   try {
+    await db
+      .update({
+        TableName: process.env.ROOM_TABLE,
+        Key: {
+          connectionIdCreator: body.roomCode,
+        },
+        ConditionExpression: `
+          connectionIdCreator=:connectionIdCreator
+          and attribute_not_exists(connectionIdInvited)
+          and creatorId <> :userId
+       `,
+        UpdateExpression: `set
+          connectionIdInvited=:connectionIdInvited,
+          invitedName=:invitedName,
+          invitedId=:userId
+        `,
+        ExpressionAttributeValues: {
+          ":connectionIdInvited": connectionId,
+          ":invitedName": body.name,
+          ":connectionIdCreator": body.roomCode,
+          ":userId": body.userId,
+        },
+      })
+      .promise();
+
     await sendMessageToClient({
       url: callbackUrlForAWS,
       connectionId: room.connectionIdCreator,
       payload: {
-        eventName: "MemberJoin",
+        eventName: "PlayerJoin",
         eventResult: "success",
         data: {
           message: "Alguien encontro la sala!",
@@ -124,7 +98,7 @@ export const handler = async (event: APIGatewayEvent) => {
       payload: {
         eventName: "JoinRoom",
         eventResult: "failed",
-        data: { message: "Se cerro la room." },
+        data: { message: "Fallo al entrar al room" },
       },
     });
   }

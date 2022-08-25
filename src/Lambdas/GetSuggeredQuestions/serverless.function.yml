@@ -1,0 +1,7 @@
+Resources:
+
+GetSuggeredQuestions:
+  handler: dist/Lambdas/GetSuggeredQuestions/index.handler
+  events:
+    - websocket:
+        route: GetSuggeredQuestions
