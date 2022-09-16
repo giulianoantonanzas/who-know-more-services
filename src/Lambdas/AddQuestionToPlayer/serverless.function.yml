@@ -1,0 +1,7 @@
+Resources:
+
+Connect:
+  handler: src/Lambdas/Connect/index.handler
+  events:
+    - websocket:
+        route: $connect

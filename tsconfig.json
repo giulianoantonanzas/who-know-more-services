@@ -10,11 +10,10 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src",
-    "outDir": "dist",
+    "baseUrl": "src/",
     "paths": {
       "Helpers/*": ["Helpers/*"],
-      "Lambdas/*": ["Lambdas/*"],
+      "Lambdas/*": ["Lambdas/*"]
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },

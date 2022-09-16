@@ -1,7 +1,7 @@
 Resources:
 
 Disconect:
-  handler: dist/Lambdas/Disconect/index.handler
+  handler: src/Lambdas/Disconect/index.handler
   events:
     - websocket:
         route: $disconnect

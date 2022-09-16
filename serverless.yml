@@ -1,6 +1,9 @@
 service: who-know-more-services
 frameworkVersion: "3"
 
+plugins:
+  - serverless-webpack
+
 provider:
   name: aws
   region: us-east-1

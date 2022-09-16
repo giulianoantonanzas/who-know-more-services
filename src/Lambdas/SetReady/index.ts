@@ -1,11 +1,19 @@
 import { APIGatewayEvent } from "aws-lambda";
 import { DynamoDB } from "aws-sdk";
+import parseToUpdate from "Helpers/parseToUpdate";
 import sendMessageToClient from "Helpers/sendMessageClient";
 import Room from "Types/Room";
 
 type SetReadyBody = {
   roomCode: string;
   userId: string;
+  myQuestions: {
+    title: string;
+    answers?: {
+      title: string;
+      isCorrect: boolean;
+    }[];
+  };
 };
 
 export const handler = async (event: APIGatewayEvent) => {
@@ -24,6 +32,23 @@ export const handler = async (event: APIGatewayEvent) => {
     .promise()) as { Item?: Room };
 
   if (!room) throw new Error("invalid request");
+
+  const { ExpressionAttributeValues, UpdateExpression } = parseToUpdate(
+    body.userId === room.creatorId
+      ? { creatorQuestions: body.myQuestions }
+      : { inviteQuestions: body.myQuestions }
+  );
+
+  await db
+    .update({
+      TableName: process.env.ROOM_TABLE,
+      Key: {
+        connectionIdCreator: body.roomCode,
+      },
+      ExpressionAttributeValues,
+      UpdateExpression,
+    })
+    .promise();
 
   if (room.creatorId === body?.userId) {
     await sendMessageToClient({
