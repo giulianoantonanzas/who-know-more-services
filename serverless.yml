@@ -1,5 +1,6 @@
 service: who-know-more-services
 frameworkVersion: "3"
+configValidationMode: error
 
 plugins:
   - serverless-webpack
@@ -34,6 +35,7 @@ functions:
   - ${file(src/Lambdas/JoinRoom/serverless.function.yml)}
   - ${file(src/Lambdas/GetSuggeredQuestions/serverless.function.yml)}
   - ${file(src/Lambdas/SetReady/serverless.function.yml)}
+  - ${file(src/Lambdas/GetEnemyQuestions/serverless.function.yml)}
 
 resources:
   - ${file(src/DynamoDB/serverless.rooms.dynamodb.yml)}

@@ -1,0 +1,7 @@
+Resources:
+
+GetEnemyQuestions:
+  handler: src/Lambdas/GetEnemyQuestions/index.handler
+  events:
+    - websocket:
+        route: GetEnemyQuestions

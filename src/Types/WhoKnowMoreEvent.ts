@@ -4,6 +4,7 @@ type EventName =
   | "Disconect"
   | "PlayerJoin"
   | "GetSuggeredQuestions"
+  | "GetEnemyQuestions"
   | "PlayerReady";
 type EventResult = "failed" | "success";
 

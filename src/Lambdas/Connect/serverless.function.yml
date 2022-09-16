@@ -1,7 +1,7 @@
 Resources:
 
-AddQuestionToPlayer:
-  handler: src/Lambdas/AddQuestionToPlayer/index.handler
+Connect:
+  handler: src/Lambdas/Connect/index.handler
   events:
     - websocket:
-        route: AddQuestionToPlayer
+        route: $connect
