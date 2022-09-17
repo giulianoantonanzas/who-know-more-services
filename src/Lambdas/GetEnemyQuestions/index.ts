@@ -30,7 +30,7 @@ export const handler = async (event: APIGatewayEvent) => {
     payload: {
       eventName: "GetEnemyQuestions",
       eventResult: "success",
-      data: { ...room.inviteQuestions },
+      data: { questions: room.inviteQuestions },
     },
   });
   await sendMessageToClient({
@@ -40,7 +40,7 @@ export const handler = async (event: APIGatewayEvent) => {
       eventName: "GetEnemyQuestions",
       eventResult: "success",
       data: {
-        ...room.creatorQuestions,
+        questions: room.creatorQuestions,
       },
     },
   });
